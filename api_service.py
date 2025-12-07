@@ -89,14 +89,24 @@ def get_definition(word, source_lang, target_lang):
         return {"error": "Service unavailable. Please try again later."}
 
     try:
-        # Clean up potential markdown code blocks if the model ignores the instruction
+        # --- YENİ TEMİZLİK KODU BAŞLANGICI ---
+        # Gelen metni temizle
         cleaned_text = result_text.strip()
-        if cleaned_text.startswith("```json"):
-            cleaned_text = cleaned_text[7:]
-        if cleaned_text.endswith("```"):
-            cleaned_text = cleaned_text[:-3]
-            
+        
+        # İlk süslü parantezi '{' ve son süslü parantezi '}' bul.
+        # Böylece model en başa "İşte cevabınız:" yazsa bile onları görmezden geliriz.
+        start_index = cleaned_text.find('{')
+        end_index = cleaned_text.rfind('}')
+
+        if start_index != -1 and end_index != -1:
+            # Sadece { ile } arasındaki gerçek JSON verisini al
+            cleaned_text = cleaned_text[start_index : end_index + 1]
+        
         return json.loads(cleaned_text)
+        # --- YENİ TEMİZLİK KODU BİTİŞİ ---
+
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse JSON response: {e}")
+        # Hata durumunda loglara gelen ham metni bas ki ne geldiğini görelim
+        logger.error(f"Raw text received: {result_text}") 
         return {"error": "Invalid response format from AI."}
