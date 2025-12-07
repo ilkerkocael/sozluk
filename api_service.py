@@ -55,11 +55,11 @@ def get_definition(word, source_lang, target_lang):
     Ensure the JSON is valid and contains no markdown formatting (like ```json).
     """
 
-    generation_config = {
+  generation_config = {
         "temperature": 0.3,
         "top_p": 0.95,
         "top_k": 40,
-        "max_output_tokens": 1024,
+        "max_output_tokens": 8192,  # <--- BURAYI 1024'TEN 8192'YE ÇIKARDIK
         "response_mime_type": "application/json",
     }
 
@@ -110,3 +110,4 @@ def get_definition(word, source_lang, target_lang):
         # Hata durumunda loglara gelen ham metni bas ki ne geldiğini görelim
         logger.error(f"Raw text received: {result_text}") 
         return {"error": "Invalid response format from AI."}
+
